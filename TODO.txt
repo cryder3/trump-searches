@@ -1,0 +1,2 @@
+Map json response to array of Tweets
+finish hooking service to tweets component
