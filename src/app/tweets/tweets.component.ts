@@ -13,7 +13,6 @@ import { TwitterService } from '../twitter.service';
 export class TweetsComponent implements OnInit {
   tweets: Tweet[];
 
-  private tweetsUrl = '';
 
   constructor(
   private twitterService: TwitterService
@@ -21,7 +20,11 @@ export class TweetsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.tweets = this.twitterService().getTweets();
+    this.twitterService.authorize();
+  }
+
+  getTweets(): void {
+    this.twitterService.getTweets().then(tweets => this.tweets = tweets);
   }
 
 

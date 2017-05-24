@@ -1,45 +1,45 @@
 import { Injectable } from '@angular/core';
-import {  Headers, Http, Response} from '@angular/http';
+import {Http, Response, Headers} from '@angular/http';
 
 import { Tweet } from './tweet/tweet';
 
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/operator/catch';
 
 
 @Injectable()
 export class TwitterService {
 
-private twitterUrl = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=realDonaldTrump&count=20';
-private base64hash = btoa('H0XY1IwEVdoAzZvSRyMmWWYhR:XlsMILpe6XonOWEQ9RE8GuzPLoCMJJWFTXvKJsxWj96oW2T74G');
-
-
-private headers = new Headers({'ContentType':'application/x-www-form-urlencoded;charset=UTF-8'},
-                              {'Authorization': this.base64hash});
-
   constructor(private http: Http) { }
+  private twitterUrl = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=realDonaldTrump&count=20';
+  private encodedConsumerKeySecret = btoa("H0XY1IwEVdoAzZvSRyMmWWYhR:XlsMILpe6XonOWEQ9RE8GuzPLoCMJJWFTXvKJsxWj96oW2T74G");
 
+  getTweets(): Promise<Tweet[]> {
 
-  getTweets(tweets: Tweet[]) {
-    this.http.get(this.twitterUrl)
-    .map(this.extractData)
+    return this.http.get(this.twitterUrl)
+    .toPromise()
+    .then(response => response.json().data as Tweet)
+     .catch(this.handleError);
   }
 
-  private extractData(res: Response) {
-    return res.json();
+   handleError(error: any): Promise<any> {
+    console.error('An error occurred', error); // for demo purposes only
+    return Promise.reject(error.message || error);
   }
 
-  private handleError(error: any): Promise<any> {
-      console.error('An error occurred', error); // for demo purposes only
-      return Promise.reject(error.message || error);
-    }
+   authorize(){
+    let headers = new Headers();
+    this.createAuthorizationHeader(headers);
+    this.http.post('https://api.twitter.com/oauth2/token', {form: {'grant_type': 'client_credentials'},
+    headers: headers}).subscribe((res) => {
+      console.log(res);
+    })
+  }
 
-    private authorizeForTwitter(){
-      const url = `https://api.twitter.com/oauth2/token`;
-      const body = `grant_type=client_credentials`;
-        return this.http.post(url, body, this.headers)
-          .map(res => {return res.json()})
-          .catch(this.handleError);
+   createAuthorizationHeader(headers: Headers) {
+    headers.append('Authorization', 'Basic ' +
+      btoa('username:password'));
+    headers.append('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+  }
 
-    }
 }

@@ -5,6 +5,7 @@ import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 import { TweetsComponent } from './tweets/tweets.component';
+import { TwitterService } from './twitter.service';
 import { Tweet } from './tweet/tweet';
 
 @NgModule({
@@ -17,7 +18,7 @@ import { Tweet } from './tweet/tweet';
     FormsModule,
     HttpModule
   ],
-  providers: [],
+  providers: [ TwitterService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
