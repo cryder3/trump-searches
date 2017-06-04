@@ -12,7 +12,9 @@ export class TwitterService {
 
   constructor(private http: Http) { }
   private twitterUrl = 'https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=realDonaldTrump&count=20';
-  private encodedConsumerKeySecret = btoa("H0XY1IwEVdoAzZvSRyMmWWYhR:XlsMILpe6XonOWEQ9RE8GuzPLoCMJJWFTXvKJsxWj96oW2T74G");
+  private key = 'CXVXHcdZiz66vsqjIQwmwYLU5';
+  private secret = 'Lu0noLNYduDXRJ7dNn7JMUAvkgBbrtper1rhOOd9laiAFncmKZ';
+  private encodedConsumerKeySecret = btoa(this.key + ':' + this.secret);
 
   getTweets(): Promise<Tweet[]> {
 
@@ -30,16 +32,16 @@ export class TwitterService {
    authorize(){
     let headers = new Headers();
     this.createAuthorizationHeader(headers);
+    console.log(headers);
     this.http.post('https://api.twitter.com/oauth2/token', {form: {'grant_type': 'client_credentials'},
-    headers: headers}).subscribe((res) => {
-      console.log(res);
-    })
+    headers: headers}).subscribe();
   }
 
    createAuthorizationHeader(headers: Headers) {
-    headers.append('Authorization', 'Basic ' +
-      btoa('username:password'));
+     console.log(this.encodedConsumerKeySecret);
+    headers.append('Authorization', 'Basic ' + this.encodedConsumerKeySecret);
     headers.append('Content-Type', 'application/x-www-form-urlencoded;charset=UTF-8');
+
   }
 
 }
